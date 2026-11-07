@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Casos · Binarioh</title>
+<meta name="description" content="Casos ilustrativos de cómo Binarioh resuelve problemas comunes de un negocio: atención por WhatsApp, facturación electrónica, tienda en línea, IA y protección de datos.">
+<meta property="og:title" content="Casos · Binarioh">
+<meta property="og:image" content="https://binarioh.com/og-image.png">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: listado tipo "vitrina" (fila de tarjetas grandes que se desliza) + página de cada caso con héroe centrado, demo en ventana y celdas con bordes de 1px */
+:root{
+  --bg:#000; --s1:#0a0a0a; --s2:#111; --s3:#171717; --line:#1f1f1f; --line2:#2e2e2e;
+  --fg:#ededed; --muted:#a1a1a1; --dim:#6b6b6b; --green:#5EEB5B; --green-dim:rgba(94,235,91,.12);
+  --warn:#f5a524; --bad:#f2555a; --wa:#0b141a; --wa-in:#202c33; --wa-out:#005c4b;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"Geist Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+h1,h2,h3{text-wrap:balance;margin:0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.eyebrow.g{color:var(--green)}
+.btn{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:999px;font-weight:500;font-size:15px;border:1px solid transparent;cursor:pointer}
+.btn.w{background:var(--fg);color:#000}
+.btn.w:hover{background:#fff}
+.btn.o{background:transparent;color:var(--fg);border-color:var(--line2)}
+.btn.o:hover{background:var(--s3)}
+:focus-visible{outline:2px solid var(--green);outline-offset:3px}
+.preview{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;padding-block:10px;border-bottom:1px solid var(--line)}
+
+/* ===== LISTADO (vitrina) ===== */
+#lista{padding-block:72px 96px}
+.store-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:36px}
+.store-head h2{font-size:clamp(36px,5.4vw,64px);line-height:1.05;letter-spacing:-.035em;font-weight:700;max-width:16ch}
+.store-head h2 span{color:var(--dim)}
+.arrows{display:flex;gap:10px}
+.arrow{width:40px;height:40px;border-radius:50%;border:0;background:var(--s3);color:var(--fg);font-size:20px;cursor:pointer;display:grid;place-items:center}
+.arrow:hover{background:#262626}
+.shelf{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:20px;scrollbar-width:none;margin-right:calc(-1*max(20px,env(safe-area-inset-right,0px)))}
+.shelf::-webkit-scrollbar{display:none}
+.tile{flex:0 0 min(340px,82vw);height:480px;scroll-snap-align:start;border-radius:28px;background:var(--s2);border:1px solid var(--line);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .2s}
+.tile:hover{transform:scale(1.015);border-color:var(--line2)}
+.tile .txt{padding:30px 28px 0;display:flex;flex-direction:column;gap:10px;position:relative;z-index:1}
+.tile h3{font-size:26px;line-height:1.15;letter-spacing:-.02em;font-weight:700}
+.tile p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+.tile .vis{flex:1;position:relative;display:flex;align-items:flex-end;justify-content:center}
+.tile .go{position:absolute;right:20px;bottom:20px;width:36px;height:36px;border-radius:50%;background:var(--fg);color:#000;display:grid;place-items:center;font-size:18px;z-index:2}
+.shelf-end{flex:0 0 1px}
+.foot-note{color:var(--dim);font-size:13px;margin-top:20px}
+
+/* visuales de las tarjetas */
+.v-phone{width:62%;height:78%;background:var(--wa);border:8px solid #222;border-bottom:0;border-radius:30px 30px 0 0;padding:34px 10px 0;display:flex;flex-direction:column;gap:8px}
+.v-phone i{height:22px;border-radius:9px;background:var(--wa-in);width:72%}
+.v-phone i.o{background:var(--wa-out);align-self:flex-end;width:60%}
+.v-doc{width:58%;height:82%;background:#f4f4f1;border-radius:14px 14px 0 0;padding:20px 18px;display:flex;flex-direction:column;gap:8px}
+.v-doc i{height:7px;border-radius:4px;background:#d5d5d0}
+.v-doc .stamp{margin-top:auto;margin-bottom:20px;align-self:flex-start;font-family:var(--mono);font-size:10px;color:#177a17;background:#e1f5e1;border-radius:6px;padding:5px 8px}
+.v-dash{width:84%;height:72%;background:var(--s1);border:1px solid var(--line2);border-bottom:0;border-radius:16px 16px 0 0;padding:16px;display:flex;flex-direction:column;gap:10px}
+.v-dash .bars{display:flex;align-items:flex-end;gap:8px;height:90px}
+.v-dash .bars i{flex:1;background:#2a2a2a;border-radius:4px 4px 0 0}
+.v-dash .bars i.g{background:var(--green)}
+.v-dash .row{display:flex;gap:8px;align-items:center}.v-dash .row i{height:8px;flex:1;background:#262626;border-radius:4px}.v-dash .row b{width:42px;height:8px;border-radius:4px;background:var(--warn)}
+.v-chat{width:80%;height:70%;display:flex;flex-direction:column;gap:12px;justify-content:flex-end;padding-bottom:28px}
+.v-chat div{background:var(--s3);border:1px solid var(--line2);border-radius:14px;padding:12px 14px;font-size:12px;color:var(--muted);font-family:var(--mono)}
+.v-chat div.ai{border-color:rgba(94,235,91,.4);color:var(--fg)}
+.v-ring{width:170px;height:170px;margin-bottom:48px;border-radius:50%;background:conic-gradient(var(--green) 0 88%,#222 88% 100%);display:grid;place-items:center}
+.v-ring span{width:136px;height:136px;border-radius:50%;background:var(--s2);display:grid;place-items:center;font-size:48px;font-weight:700;letter-spacing:-.03em}
+
+/* ===== DETALLE ===== */
+.case{display:none}
+.case.on{display:block}
+.back{display:inline-flex;gap:6px;align-items:center;color:var(--muted);font-size:14px;margin-top:24px}
+.back:hover{color:var(--fg)}
+.hero{position:relative;text-align:center;padding-block:72px 64px;display:flex;flex-direction:column;align-items:center;gap:20px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 60% 70% at 50% 40%,#000 30%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse 60% 70% at 50% 40%,#000 30%,transparent 75%);pointer-events:none}
+.hero::after{content:"";position:absolute;left:50%;top:-10%;width:640px;height:420px;max-width:100%;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(94,235,91,.13),transparent);pointer-events:none}
+.hero>*{position:relative;z-index:1}
+.hero h1{font-size:clamp(40px,7vw,80px);line-height:1;letter-spacing:-.045em;font-weight:700;max-width:14ch;background:linear-gradient(180deg,#fff 30%,#8a8a8a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);font-size:clamp(17px,2vw,20px);max-width:52ch;margin:0}
+.hero .btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.blk{padding-block:56px}
+.blk-head{display:flex;flex-direction:column;gap:10px;margin-bottom:28px;max-width:60ch}
+.blk-head h2{font-size:clamp(28px,3.6vw,44px);line-height:1.08;letter-spacing:-.03em;font-weight:700}
+.blk-head p{color:var(--muted);margin:0}
+.cells{display:grid;border:1px solid var(--line);border-radius:16px;overflow:hidden;gap:1px;background:var(--line)}
+.cells.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cells.c4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cells.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cell{background:var(--bg);padding:26px 24px;display:flex;flex-direction:column;gap:8px}
+.cell h4{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em}
+.cell p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.55}
+.cell .ic{width:32px;height:32px;border-radius:8px;border:1px solid var(--line2);display:grid;place-items:center;margin-bottom:6px}
+.cell .ic svg{width:16px;height:16px}
+.cell .num{font-family:var(--mono);font-size:12px;color:var(--green)}
+.cell ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.cell li{display:flex;gap:10px;font-size:15px;color:var(--fg)}
+.cell li::before{content:"";width:16px;height:16px;flex:none;margin-top:3px;border-radius:50%}
+.cell.before li{color:var(--muted)}
+.cell.before li::before{border:1.5px solid #444}
+.cell.after li::before{background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2l2.2 2.2 4.8-4.8' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+.stack{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.stack span{font-family:var(--mono);font-size:12px;border:1px solid var(--line2);border-radius:999px;padding:4px 12px;color:var(--muted)}
+
+/* ventana de demo */
+.window{border:1px solid var(--line2);border-radius:14px;background:var(--s1);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.02),0 40px 80px -30px rgba(94,235,91,.12)}
+.window .chrome{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:#0c0c0c}
+.window .chrome i{width:11px;height:11px;border-radius:50%;background:#2a2a2a}
+.window .chrome span{margin-left:10px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+.window .chrome em{margin-left:auto;font-style:normal;font-family:var(--mono);font-size:11px;color:var(--green);border:1px solid rgba(94,235,91,.35);border-radius:999px;padding:2px 10px}
+.window .inner{padding:20px;display:flex;flex-direction:column;gap:14px}
+.hint{font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;background:var(--s3);color:var(--fg);border:1px solid var(--line2);border-radius:999px;padding:7px 14px;cursor:pointer}
+.chip:hover{border-color:#555}
+.chip.on{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.cta{text-align:center;padding-block:88px;display:flex;flex-direction:column;align-items:center;gap:16px;border-top:1px solid var(--line)}
+.cta h2{font-size:clamp(30px,4.4vw,52px);letter-spacing:-.035em;line-height:1.05;font-weight:700;max-width:18ch}
+.cta p{color:var(--muted);margin:0}
+.next{display:flex;justify-content:space-between;gap:16px;padding-block:24px 64px;border-top:1px solid var(--line);flex-wrap:wrap}
+.next a{color:var(--muted);font-size:14px}.next a b{display:block;color:var(--fg);font-size:17px;font-weight:600}
+
+/* chat */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.phone{background:var(--wa);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;height:420px;border:1px solid #1d2a31}
+.phone-top{background:#202c33;padding:10px 14px;display:flex;gap:10px;align-items:center;font-size:14px}
+.phone-top .av{width:30px;height:30px;border-radius:50%;background:#2b4a3a;display:grid;place-items:center;font-weight:700;font-size:12px;color:var(--green)}
+.phone-top small{display:block;color:#8aa0a8;font-size:11px}
+.msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.m{max-width:84%;padding:7px 10px 6px;border-radius:9px;font-size:13.5px;line-height:1.4;background:var(--wa-in);align-self:flex-start;white-space:pre-line;animation:pop .25s ease}
+.m.out{background:var(--wa-out);align-self:flex-end}
+.m.sys{align-self:center;background:#182229;color:#8aa0a8;font-size:11.5px;border-radius:6px}
+.m .t{display:block;text-align:right;font-size:10px;color:#9fb3ba;margin-top:2px}
+.typing{align-self:flex-start;background:var(--wa-in);border-radius:9px;padding:9px 12px;display:flex;gap:4px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#8aa0a8;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+.agenda{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px;height:420px;overflow:hidden}
+.agenda h5{margin:0 0 4px;font-size:12px;color:var(--muted);font-weight:500;font-family:var(--mono);display:flex;justify-content:space-between}
+.slot{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:9px 11px;font-size:13px;transition:background .4s,border-color .4s}
+.slot time{font-family:var(--mono);font-size:12px;color:var(--muted);width:44px;flex:none}
+.slot .st{margin-left:auto;font-size:11px;border-radius:999px;padding:2px 8px;background:var(--s3);color:var(--muted);white-space:nowrap}
+.slot.busy .st,.slot.conf .st{background:#142414;color:var(--green)}
+.slot.new{background:var(--green-dim);border-color:var(--green)}
+
+/* factura */
+.pos{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.panel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel h5{margin:0;font-size:12px;color:var(--muted);font-weight:500;font-family:var(--mono)}
+.prods{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prod{text-align:left;background:var(--s2);border:1px solid var(--line2);border-radius:10px;padding:9px 10px;color:var(--fg);cursor:pointer;font-size:13px}
+.prod:hover{border-color:#555}
+.prod small{display:block;color:var(--muted);font-family:var(--mono);font-size:11.5px}
+.lines{font-size:13px;display:flex;flex-direction:column;gap:4px;min-height:70px}
+.line{display:flex;justify-content:space-between;gap:8px;font-variant-numeric:tabular-nums}
+.tot{border-top:1px dashed var(--line2);padding-top:8px;font-size:13px;display:flex;flex-direction:column;gap:3px;font-variant-numeric:tabular-nums}
+.tot div{display:flex;justify-content:space-between}.tot .g{font-weight:600;font-size:15px}
+.seg{display:flex;background:var(--s2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px}
+.seg button{flex:1;font-size:12px;border:0;border-radius:999px;padding:6px;background:transparent;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--s3);color:var(--fg)}
+.dte{background:#f5f5f2;color:#111;border-radius:10px;padding:14px;font-size:11.5px;line-height:1.45;display:none;flex-direction:column;gap:6px;animation:pop .3s ease}
+.dte.on{display:flex}
+.dte .hd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.dte .hd b{font-size:13px}
+.dte code{font-family:var(--mono);font-size:10.5px;word-break:break-all;color:#333}
+.dte .ok{background:#e3f6e3;color:#1c6b1c;border-radius:6px;padding:6px 8px;font-weight:600}
+.dte .qr{width:56px;height:56px;flex:none;background:conic-gradient(from 90deg at 30% 30%,#111 25%,transparent 0) 0 0/14px 14px,repeating-linear-gradient(45deg,#111 0 2px,transparent 2px 5px);border:3px solid #111}
+.pipeline{display:flex;flex-direction:column;gap:8px;font-size:13px}
+.pipe{display:flex;gap:10px;align-items:center;color:var(--dim);transition:color .3s}
+.pipe i{width:16px;height:16px;border-radius:50%;border:1.5px solid #3a3a3a;flex:none;transition:all .3s}
+.pipe.done{color:var(--fg)}.pipe.done i{background:var(--green);border-color:var(--green)}
+
+/* inventario */
+.inv-top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.mini{background:var(--bg);padding:14px}
+.mini .n{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.1;font-variant-numeric:tabular-nums}
+.mini .l{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.order{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted)}
+.order select,.order input{font:inherit;font-size:13px;background:var(--s2);color:var(--fg);border:1px solid var(--line2);border-radius:8px;padding:7px 10px;max-width:100%}
+.order input{width:70px}
+.order .btn{height:34px;padding:0 14px;font-size:13px}
+.log{font-size:13px;color:var(--muted);min-height:20px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:460px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+th{color:var(--muted);font-weight:500;font-size:11.5px;font-family:var(--mono);background:var(--s1)}
+td.num{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12.5px}
+.pill{font-size:11px;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.pill.ok{background:#142414;color:var(--green)}.pill.low{background:#2b2210;color:var(--warn)}.pill.out{background:#2b1213;color:var(--bad)}
+tr.flash td{animation:fl 1.2s ease}
+@keyframes fl{from{background:var(--green-dim)}to{background:transparent}}
+
+/* IA */
+.ia{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:14px}
+.tasks{display:flex;flex-direction:column;gap:8px}
+.task{text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--fg);cursor:pointer;font-size:14px}
+.task small{display:block;color:var(--muted);font-size:12px}
+.task:hover{border-color:var(--line2)}
+.task.on{border-color:var(--green);background:var(--green-dim)}
+.ia-out{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.prompt{background:var(--s1);border:1px solid var(--line2);border-radius:10px;padding:12px;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:var(--muted)}
+.prompt b{color:var(--green);font-weight:500}
+.tbars{display:flex;flex-direction:column;gap:8px}
+.tbar{display:grid;grid-template-columns:64px 1fr 56px;gap:10px;align-items:center;font-size:12px;color:var(--muted)}
+.tbar div{height:8px;border-radius:4px;background:#1c1c1c;overflow:hidden}
+.tbar div span{display:block;height:100%;border-radius:4px;transition:width .8s ease}
+.tbar .bef span{background:#555}.tbar .aft span{background:var(--green)}
+.tbar em{font-style:normal;font-family:var(--mono);color:var(--fg);text-align:right}
+
+/* datos */
+.sec-wrap{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:14px;align-items:start}
+.gauge{position:relative;aspect-ratio:1;max-width:220px;width:100%;margin:10px auto 0}
+.gauge svg{width:100%;height:100%;display:block;transform:rotate(-90deg)}
+.gauge .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gauge .val b{font-size:56px;font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.gauge .val small{color:var(--muted);font-size:12px;font-family:var(--mono)}
+.lvl{text-align:center;font-weight:600;margin-top:10px;font-size:15px}
+.checks{display:flex;flex-direction:column;gap:8px}
+.chk{display:flex;gap:12px;align-items:flex-start;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:14px}
+.chk:hover{border-color:var(--line2)}
+.chk input{appearance:none;width:18px;height:18px;border-radius:5px;border:1.5px solid #4a4a4a;flex:none;margin:2px 0 0;cursor:pointer;display:grid;place-items:center}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"";width:4px;height:9px;border:solid #000;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.chk small{display:block;color:var(--muted);font-size:12px}
+
+/* tienda + panel */
+.shop{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:14px;align-items:start}
+.store{background:#fafafa;color:#111;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.store-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid #e6e6e6;font-weight:700;font-size:15px;letter-spacing:-.01em}
+.cartbtn{font-size:12px;font-weight:500;background:#111;color:#fff;border-radius:999px;padding:4px 11px;transition:transform .2s}
+.cartbtn.bump{transform:scale(1.12)}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.sp{border:1px solid #e8e8e8;border-radius:10px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+.sp .img{aspect-ratio:4/3;display:grid;place-items:center}
+.sp .img svg{width:44%;height:auto;opacity:.85}
+.sp .b{padding:8px 10px 10px;display:flex;flex-direction:column;gap:6px;font-size:12.5px;line-height:1.3}
+.sp .b span{color:#666;font-family:var(--mono);font-size:11.5px}
+.sp button{font:inherit;font-size:12px;font-weight:500;border:1px solid #ddd;background:#fff;color:#111;border-radius:999px;padding:5px;cursor:pointer}
+.sp button:hover{background:#111;color:#fff;border-color:#111}
+.sp .stk{font-size:10.5px;color:#999}
+.checkout{margin-top:auto;border-top:1px solid #e6e6e6;padding:12px 14px;display:flex;flex-direction:column;gap:10px;font-size:13px}
+.checkout .line span{color:#555}
+.paybtn{font:inherit;font-weight:600;font-size:14px;border:0;border-radius:999px;background:#111;color:#fff;padding:11px;cursor:pointer}
+.paybtn:disabled{background:#d6d6d6;color:#888;cursor:default}
+.dash{display:flex;flex-direction:column;gap:12px;min-width:0}
+.dash .panel h5{display:flex;justify-content:space-between}
+.dash2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:12px}
+.hours{display:flex;align-items:flex-end;gap:6px;height:110px}
+.hours div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.hours i{display:block;width:100%;background:#2a2a2a;border-radius:4px 4px 0 0;transition:height .6s cubic-bezier(.2,.8,.2,1),background .3s;min-height:3px}
+.hours div.now i{background:var(--green)}
+.hours small{font-family:var(--mono);font-size:10px;color:var(--dim)}
+.chans{display:flex;flex-direction:column;gap:10px}
+.chan{display:flex;flex-direction:column;gap:4px;font-size:12.5px}
+.chan .top{display:flex;justify-content:space-between;color:var(--muted)}.chan .top b{color:var(--fg);font-weight:500;font-family:var(--mono);font-size:12px}
+.chan .tr{height:6px;background:#1c1c1c;border-radius:3px;overflow:hidden}.chan .tr span{display:block;height:100%;background:var(--green);border-radius:3px;transition:width .6s ease}
+.feed{display:flex;flex-direction:column;gap:6px}
+.ord{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;align-items:center;font-size:12.5px;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.ord.new{animation:pop .35s ease,fl 1.4s ease}
+.ord .id{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.ord .amt{font-family:var(--mono);font-size:12px;text-align:right}
+.ord .sub{grid-column:1/3;color:var(--dim);font-size:11.5px}
+.ord .pill{grid-row:span 1}
+
+/* datos: pestañas */
+.tabs{align-self:flex-start;flex-wrap:wrap}
+.tabs button{flex:none;padding:7px 14px;font-size:13px}
+.dpanel{display:none;flex-direction:column;gap:12px}
+.dpanel.on{display:flex;animation:pop .25s ease}
+.dhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+table.perm{min-width:520px}
+table.perm td{font-size:13px}
+.pm{display:inline-block;font-style:normal;font-family:var(--mono);font-size:11px;border-radius:6px;padding:2px 8px;min-width:38px;text-align:center;transition:all .35s}
+.pm.rw{background:#2b1d10;color:var(--warn)}.pm.r{background:#142414;color:var(--green)}.pm.no{background:var(--s3);color:var(--dim)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.legend span{display:flex;gap:6px;align-items:center}
+.term{background:#050505;border:1px solid var(--line2);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:12.5px;line-height:1.7;min-height:96px;white-space:pre-wrap;word-break:break-word}
+.term .dim{color:var(--dim)}.term .cmd{color:var(--fg)}.term .ok{color:var(--green)}.term .bad{color:var(--bad)}.term .warn{color:var(--warn)}
+.rec{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rec div{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;align-items:center}
+.rec div:last-child{border-bottom:0}
+.rec span{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.rec code{font-family:var(--mono);font-size:12.5px;word-break:break-all;transition:color .3s}
+.rec.enc code{color:var(--green)}
+.enc-note{font-size:13px;color:var(--muted);min-height:20px}
+.layers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.layers div{background:var(--bg);padding:14px;display:flex;flex-direction:column;gap:4px;font-size:13px}
+.layers span{color:var(--muted);font-size:12.5px;line-height:1.5}
+/* tarjeta de vitrina: tienda */
+.v-shop{width:84%;margin-bottom:68px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
+.v-shop .s{background:#f4f4f1;border-radius:14px;height:120px;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;gap:5px}
+.v-shop .s i{height:6px;border-radius:3px;background:#d0d0cb;width:70%}.v-shop .s i+i{width:40%;background:#111}
+.v-shop .k{grid-column:1/3;background:var(--s1);border:1px solid var(--line2);border-radius:14px;height:86px;display:flex;align-items:flex-end;gap:6px;padding:12px}
+.v-shop .k b{flex:1;background:#2a2a2a;border-radius:3px 3px 0 0}.v-shop .k b.g{background:var(--green)}
+.v-lock{width:80%;height:72%;display:flex;flex-direction:column;gap:8px;justify-content:flex-end;padding-bottom:68px;font-family:var(--mono);font-size:11.5px}
+.v-lock div{background:var(--s1);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;gap:8px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.v-lock div b{font-weight:400;color:var(--green);overflow:hidden;text-overflow:ellipsis}
+
+@media (max-width:900px){
+  .cells.c4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .split,.pos,.ia,.sec-wrap,.shop{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  .cells.c3,.cells.c4,.cells.c2,.layers,.dash2{grid-template-columns:1fr}
+  .rec div{grid-template-columns:80px minmax(0,1fr)}
+  .mini{padding:12px 10px}.mini .n{font-size:19px}
+  .tile{height:440px}
+  .agenda{height:auto}
+  .arrows{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.topnav{position:sticky;top:0;z-index:50;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topnav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.topnav img{height:22px;display:block}
+.topnav .r{display:flex;gap:22px;align-items:center;font-size:14px;color:var(--muted)}
+.topnav .r a:hover{color:var(--fg)}
+.topnav .r .btn{height:36px;padding:0 16px;font-size:13.5px;background:var(--green);color:#000;font-weight:600}
+@media (max-width:620px){.topnav .r .hide{display:none}}
+</style>
+</head>
+<body>
+<nav class="topnav"><div class="wrap"><a href="/" aria-label="Inicio"><img src="logo-binarioh.png" alt="Binarioh"></a><div class="r"><a class="hide" href="/#servicios">Servicios</a><a class="hide" href="#">Casos</a><a class="btn" href="/#contacto">Cotización sin costo</a></div></div></nav>
+
+
+<!-- ================= LISTADO ================= -->
+<section id="lista" class="wrap">
+  <div class="store-head">
+    <h2>Casos. <span>Así resolvemos los problemas más comunes de un negocio.</span></h2>
+    <div class="arrows"><button class="arrow" id="prev" aria-label="Anterior">‹</button><button class="arrow" id="nextb" aria-label="Siguiente">›</button></div>
+  </div>
+  <div class="shelf" id="shelf">
+    <a class="tile" href="#atencion">
+      <div class="txt"><span class="eyebrow g">Automatización</span><h3>Atención por WhatsApp que nunca duerme</h3><p>Respuestas y citas automáticas para clínicas y consultorios.</p></div>
+      <div class="vis"><div class="v-phone"><i></i><i class="o"></i><i></i><i class="o"></i><i></i></div></div><span class="go">›</span>
+    </a>
+    <a class="tile" href="#facturacion">
+      <div class="txt"><span class="eyebrow g">Facturación electrónica</span><h3>Del talonario a la factura electrónica</h3><p>Facturar desde la caja, conectado al inventario.</p></div>
+      <div class="vis"><div class="v-doc"><i style="width:55%"></i><i></i><i style="width:80%"></i><i></i><i style="width:65%"></i><span class="stamp">SELLO HACIENDA ✓</span></div></div><span class="go">›</span>
+    </a>
+    <a class="tile" href="#tienda">
+      <div class="txt"><span class="eyebrow g">Sistemas</span><h3>Tienda en línea con ventas en tiempo real</h3><p>Vende las 24 horas y mira cada venta en un solo panel.</p></div>
+      <div class="vis"><div class="v-shop"><div class="s"><i></i><i></i></div><div class="s"><i></i><i></i></div><div class="k"><b style="height:35%"></b><b style="height:55%"></b><b style="height:45%"></b><b style="height:80%"></b><b class="g" style="height:100%"></b></div></div></div><span class="go">›</span>
+    </a>
+    <a class="tile" href="#ia">
+      <div class="txt"><span class="eyebrow g">IA para tu equipo</span><h3>Tu equipo trabajando con IA</h3><p>Instrucciones listas para las tareas que más se repiten.</p></div>
+      <div class="vis"><div class="v-chat"><div>Resume esta normativa en 5 puntos…</div><div class="ai">1. A quién afecta · 2. Desde cuándo · 3. …</div></div></div><span class="go">›</span>
+    </a>
+    <a class="tile" href="#datos">
+      <div class="txt"><span class="eyebrow g">Protección de datos</span><h3>La información de tu negocio, protegida</h3><p>Cifrado, servidores seguros y accesos por rol.</p></div>
+      <div class="vis"><div class="v-lock"><div>dui <b>q8Zr2+kP0aX…</b></div><div>tarjeta <b>Hn4/vT9eLw…</b></div><div>ventas → planilla <b style="color:var(--bad)">denegado</b></div></div></div><span class="go">›</span>
+    </a>
+    <span class="shelf-end"></span>
+  </div>
+  <p class="foot-note">Demostraciones con fines ilustrativos. Cada solución se adapta al negocio.</p>
+</section>
+
+<!-- ================= CASO 1 ================= -->
+<article class="case" id="c-atencion"><div class="wrap">
+  <a class="back" href="#">‹ Todos los casos</a>
+  <header class="hero">
+    <span class="eyebrow g">Automatización para tu negocio</span>
+    <h1>Ningún cliente se queda sin respuesta</h1>
+    <p>Un asistente de WhatsApp que responde, agenda y recuerda las citas, para que tu equipo atienda a quien está en el local.</p>
+  </header>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El problema</span><h2>Un WhatsApp que nunca para</h2><p>En una clínica o consultorio, los mensajes llegan todo el día y también de noche.</p></div>
+    <div class="cells c3">
+      <div class="cell"><h4>Mensajes sin responder</h4><p>Quien escribe y no recibe respuesta, busca otra opción.</p></div>
+      <div class="cell"><h4>Citas olvidadas</h4><p>Sin recordatorio, algunos pacientes simplemente no llegan.</p></div>
+      <div class="cell"><h4>Recepción saturada</h4><p>Contestar el teléfono le quita tiempo a la atención en persona.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">La solución</span><h2>Un asistente que atiende y agenda</h2><p>Conoce los servicios y precios, ofrece solo horarios libres, aparta la cita y la recuerda un día antes. Si el tema es delicado, pasa la conversación a una persona.</p></div>
+    <div class="window">
+      <div class="chrome"><i></i><i></i><i></i><span>asistente-whatsapp</span><em>Demo</em></div>
+      <div class="inner">
+        <span class="hint">Elige qué escribe el paciente:</span>
+        <div class="chips" id="clin-chips">
+          <button class="chip" data-k="precio">¿Cuánto cuesta una limpieza?</button>
+          <button class="chip" data-k="cita">Quiero una cita</button>
+          <button class="chip" data-k="recordatorio">Recordatorio del día anterior</button>
+          <button class="chip" data-k="humano">Tengo mucho dolor</button>
+        </div>
+        <div class="split">
+          <div class="phone"><div class="phone-top"><span class="av">TC</span><div>Tu clínica<small>Asistente virtual · en línea</small></div></div><div class="msgs" id="clin-msgs"><div class="m sys">Hoy</div></div></div>
+          <div class="agenda" id="clin-agenda"><h5><span>Agenda · jueves</span><span>Consultorio 1</span></h5></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">Cómo funciona</span><h2>De la pregunta a la cita</h2></div>
+    <div class="cells c4">
+      <div class="cell"><span class="num">01</span><h4>El cliente escribe</h4><p>Al mismo número de WhatsApp de siempre.</p></div>
+      <div class="cell"><span class="num">02</span><h4>El asistente responde</h4><p>Precios, horarios, ubicación y preguntas frecuentes.</p></div>
+      <div class="cell"><span class="num">03</span><h4>Agenda la cita</h4><p>Solo en horarios libres de tu calendario.</p></div>
+      <div class="cell"><span class="num">04</span><h4>Recuerda y confirma</h4><p>Un día antes; si cancela, el espacio se libera.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El resultado</span><h2>Más citas con el mismo equipo</h2></div>
+    <div class="cells c2">
+      <div class="cell before"><span class="eyebrow">Antes</span><ul><li>Respuestas tardías</li><li>Agenda en un cuaderno</li><li>Citas olvidadas</li></ul></div>
+      <div class="cell after"><span class="eyebrow g">Después</span><ul><li>Respuesta inmediata, 24/7</li><li>Agenda digital compartida</li><li>Recordatorios automáticos</li></ul></div>
+    </div>
+    <div class="stack"><span>WhatsApp Business</span><span>IA conversacional</span><span>Google Calendar</span></div>
+  </section>
+</div></article>
+
+<!-- ================= CASO 2 ================= -->
+<article class="case" id="c-facturacion"><div class="wrap">
+  <a class="back" href="#">‹ Todos los casos</a>
+  <header class="hero">
+    <span class="eyebrow g">Facturación electrónica sin complicaciones</span>
+    <h1>Del talonario a la factura electrónica</h1>
+    <p>Hacemos los trámites con Hacienda y conectamos la facturación con tu inventario, sin detener la operación.</p>
+  </header>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El problema</span><h2>Llega la notificación de Hacienda</h2><p>Un comercio que factura con talonario debe pasar a documentos tributarios electrónicos (DTE).</p></div>
+    <div class="cells c3">
+      <div class="cell"><h4>No saber por dónde empezar</h4><p>Credenciales, firma electrónica, pruebas y el sistema correcto.</p></div>
+      <div class="cell"><h4>Doble registro</h4><p>Cada venta se anota en la factura y otra vez en el inventario.</p></div>
+      <div class="cell"><h4>Riesgo de multas</h4><p>No cumplir a tiempo trae sanciones.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">La solución</span><h2>Facturar desde la caja, con todo conectado</h2><p>Al vender, sale la factura, Hacienda la sella, el cliente la recibe y el inventario se actualiza.</p></div>
+    <div class="window">
+      <div class="chrome"><i></i><i></i><i></i><span>punto-de-venta</span><em>Demo</em></div>
+      <div class="inner">
+        <span class="hint">Agrega productos y emite la factura:</span>
+        <div class="pos">
+          <div class="panel"><h5>Productos</h5><div class="prods" id="fer-prods"></div>
+            <div class="seg" id="fer-type"><button class="on" data-t="FAC">Consumidor final</button><button data-t="CCF">Crédito fiscal</button></div></div>
+          <div class="panel"><h5>Venta actual</h5><div class="lines" id="fer-lines"></div><div class="tot" id="fer-tot"></div>
+            <button class="btn w" id="fer-go" style="justify-content:center">Emitir factura electrónica</button></div>
+        </div>
+        <div class="pos">
+          <div class="dte" id="fer-dte"></div>
+          <div class="panel" id="fer-pipe-wrap" style="display:none"><h5>Lo que pasa al facturar</h5><div class="pipeline" id="fer-pipe"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">Cómo funciona</span><h2>Nosotros hacemos el trámite</h2></div>
+    <div class="cells c4">
+      <div class="cell"><span class="num">01</span><h4>Diagnóstico</h4><p>Volumen de facturas y sistema ideal.</p></div>
+      <div class="cell"><span class="num">02</span><h4>Trámites y firma</h4><p>Credenciales, firma electrónica y pruebas.</p></div>
+      <div class="cell"><span class="num">03</span><h4>Conexión</h4><p>Con tu inventario o punto de venta.</p></div>
+      <div class="cell"><span class="num">04</span><h4>Capacitación</h4><p>Tu equipo listo para facturar y anular.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El resultado</span><h2>Cumples con Hacienda y ordenas el negocio</h2></div>
+    <div class="cells c2">
+      <div class="cell before"><span class="eyebrow">Antes</span><ul><li>Talonario y Excel por separado</li><li>Facturas físicas en cajas</li><li>Incertidumbre con Hacienda</li></ul></div>
+      <div class="cell after"><span class="eyebrow g">Después</span><ul><li>Factura electrónica desde la caja</li><li>Inventario que se actualiza solo</li><li>Respaldo automático en la nube</li></ul></div>
+    </div>
+    <div class="stack"><span>DTE Ministerio de Hacienda</span><span>Firma electrónica</span><span>Integración con inventario</span></div>
+  </section>
+</div></article>
+
+<!-- ================= CASO 3 ================= -->
+<article class="case" id="c-tienda"><div class="wrap">
+  <a class="back" href="#">‹ Todos los casos</a>
+  <header class="hero">
+    <span class="eyebrow g">Sistemas para tu negocio</span>
+    <h1>Vende en línea y mira cada venta al instante</h1>
+    <p>Una tienda en línea conectada a un panel de ventas que junta lo que vendes en la web, por WhatsApp y en el local.</p>
+  </header>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El problema</span><h2>Vendes por todos lados, pero no sabes cuánto</h2><p>Las ventas llegan por redes, WhatsApp y el local, y cada canal se anota en un lugar distinto.</p></div>
+    <div class="cells c3">
+      <div class="cell"><h4>Ventas solo en horario</h4><p>Si no hay alguien contestando, el cliente no puede comprar.</p></div>
+      <div class="cell"><h4>Números al final del mes</h4><p>Saber cuánto se vendió toma horas de juntar cuadernos y chats.</p></div>
+      <div class="cell"><h4>Decisiones a ciegas</h4><p>No se sabe qué producto, canal u hora vende más.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">La solución</span><h2>Tu tienda y tu panel, conectados</h2><p>El cliente compra y paga en línea. Al mismo tiempo, tu panel registra la venta, descuenta la existencia y te avisa qué reabastecer.</p></div>
+    <div class="window">
+      <div class="chrome"><i></i><i></i><i></i><span>tienda + panel-de-ventas</span><em>Demo</em></div>
+      <div class="inner">
+        <span class="hint">Compra en la tienda como si fueras cliente, o registra ventas de otros canales:</span>
+        <div class="shop">
+          <div class="store">
+            <div class="store-bar"><span>Tu tienda</span><span class="cartbtn" id="st-cartn">Carrito · 0</span></div>
+            <div class="sgrid" id="st-grid"></div>
+            <div class="checkout"><div class="line"><span id="st-sum">Agrega un producto</span><b id="st-tot">$0.00</b></div><button class="paybtn" id="st-pay" disabled>Pagar con tarjeta</button></div>
+          </div>
+          <div class="dash">
+            <div class="inv-top" id="st-kpis"></div>
+            <div class="panel"><h5><span>Ventas por hora · hoy</span></h5><div class="hours" id="st-hours"></div></div>
+            <div class="dash2">
+              <div class="panel"><h5>Por canal</h5><div class="chans" id="st-chans"></div></div>
+              <div class="panel"><h5>Últimos pedidos</h5><div class="feed" id="st-feed"></div></div>
+            </div>
+            <div class="chips"><button class="chip" id="st-local">+ Venta en el local</button><button class="chip" id="st-wa">+ Pedido por WhatsApp</button></div>
+            <div class="log" id="st-log"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">Cómo funciona</span><h2>De la vitrina al reporte</h2></div>
+    <div class="cells c4">
+      <div class="cell"><span class="num">01</span><h4>Tienda en línea</h4><p>Catálogo, carrito y pagos con tarjeta o transferencia.</p></div>
+      <div class="cell"><span class="num">02</span><h4>Todos los canales</h4><p>Web, WhatsApp y local registran en el mismo sistema.</p></div>
+      <div class="cell"><span class="num">03</span><h4>Inventario conectado</h4><p>Cada venta descuenta existencia y avisa al llegar al mínimo.</p></div>
+      <div class="cell"><span class="num">04</span><h4>Panel de ventas</h4><p>Por producto, canal, vendedor y hora, desde el celular.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El resultado</span><h2>Un negocio que vende las 24 horas y se mide solo</h2></div>
+    <div class="cells c2">
+      <div class="cell before"><span class="eyebrow">Antes</span><ul><li>Ventas solo en horario de atención</li><li>Cada canal anotado por separado</li><li>Reportes a mano al final del mes</li></ul></div>
+      <div class="cell after"><span class="eyebrow g">Después</span><ul><li>Tienda abierta todo el día</li><li>Todas las ventas en un solo panel</li><li>Números del día en tiempo real</li></ul></div>
+    </div>
+    <div class="stack"><span>Tienda en línea</span><span>Pagos con tarjeta</span><span>Panel de ventas</span><span>Inventario conectado</span><span>Facturación electrónica</span></div>
+  </section>
+</div></article>
+
+<!-- ================= CASO 4 ================= -->
+<article class="case" id="c-ia"><div class="wrap">
+  <a class="back" href="#">‹ Todos los casos</a>
+  <header class="hero">
+    <span class="eyebrow g">IA para tu equipo</span>
+    <h1>Tu equipo trabajando con IA, todos los días</h1>
+    <p>Talleres prácticos con tareas reales de tu negocio y una biblioteca de instrucciones lista para usar.</p>
+  </header>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El problema</span><h2>Mucho texto, poco tiempo</h2><p>En una oficina, buena parte del día se va en redactar, resumir y revisar documentos.</p></div>
+    <div class="cells c3">
+      <div class="cell"><h4>Tareas lentas</h4><p>Correos, resúmenes y propuestas hechos desde cero.</p></div>
+      <div class="cell"><h4>Uso sin reglas</h4><p>Información sensible pegada en herramientas de IA.</p></div>
+      <div class="cell"><h4>Conocimiento aislado</h4><p>Lo que uno descubre no le sirve al resto del equipo.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">La solución</span><h2>Instrucciones listas para cada tarea</h2><p>Cada equipo recibe sus propias instrucciones (prompts) y una política clara de uso seguro.</p></div>
+    <div class="window">
+      <div class="chrome"><i></i><i></i><i></i><span>biblioteca-de-prompts</span><em>Demo</em></div>
+      <div class="inner"><span class="hint">Elige una tarea:</span><div class="ia"><div class="tasks" id="ia-tasks"></div><div class="ia-out" id="ia-out"></div></div></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">Cómo funciona</span><h2>De la curiosidad al hábito</h2></div>
+    <div class="cells c4">
+      <div class="cell"><span class="num">01</span><h4>Diagnóstico</h4><p>Qué tareas consumen más tiempo.</p></div>
+      <div class="cell"><span class="num">02</span><h4>Taller práctico</h4><p>Cada persona resuelve tareas reales.</p></div>
+      <div class="cell"><span class="num">03</span><h4>Biblioteca y política</h4><p>Prompts compartidos y reglas claras.</p></div>
+      <div class="cell"><span class="num">04</span><h4>Acompañamiento</h4><p>Dudas resueltas después del taller.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El resultado</span><h2>La IA como herramienta de todos</h2></div>
+    <div class="cells c2">
+      <div class="cell before"><span class="eyebrow">Antes</span><ul><li>Todo se redacta a mano</li><li>Uso de IA aislado</li><li>Datos expuestos</li></ul></div>
+      <div class="cell after"><span class="eyebrow g">Después</span><ul><li>Borradores en minutos, revisados por una persona</li><li>Biblioteca compartida</li><li>Política de uso seguro</li></ul></div>
+    </div>
+    <div class="stack"><span>ChatGPT</span><span>Claude</span><span>Copilot</span></div>
+  </section>
+</div></article>
+
+<!-- ================= CASO 5 ================= -->
+<article class="case" id="c-datos"><div class="wrap">
+  <a class="back" href="#">‹ Todos los casos</a>
+  <header class="hero">
+    <span class="eyebrow g">Protección de datos</span>
+    <h1>La información de tu negocio, protegida de punta a punta</h1>
+    <p>Ciframos los datos, aseguramos tus servidores y controlamos quién accede a cada cosa. Además, te dejamos preparado para la ley de protección de datos.</p>
+  </header>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El problema</span><h2>Una sola falla expone todo</h2><p>Muchos sistemas guardan datos de clientes, facturas y planillas sin las protecciones básicas.</p></div>
+    <div class="cells c3">
+      <div class="cell"><h4>Todos ven todo</h4><p>Un mismo usuario de base de datos para todo el sistema y todo el personal.</p></div>
+      <div class="cell"><h4>Datos en texto plano</h4><p>Si alguien copia la base de datos o un respaldo, puede leerlo todo.</p></div>
+      <div class="cell"><h4>Servidores expuestos</h4><p>Puertos abiertos, contraseñas débiles y sin actualizaciones de seguridad.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">La solución</span><h2>Protección por capas</h2><p>Accesos por rol, cifrado de la información y un servidor endurecido y vigilado. Si una capa falla, las otras siguen protegiendo.</p></div>
+    <div class="window">
+      <div class="chrome"><i></i><i></i><i></i><span>seguridad</span><em>Demo</em></div>
+      <div class="inner">
+        <div class="seg tabs" id="dat-tabs"><button class="on" data-p="roles">Roles y accesos</button><button data-p="cifrado">Cifrado</button><button data-p="servidor">Servidor</button></div>
+
+        <div class="dpanel on" id="dp-roles">
+          <div class="dhead"><span class="hint">Permisos en la base de datos por rol</span><button class="chip" id="rol-tog">Aplicar mínimo privilegio</button></div>
+          <div class="tbl-wrap"><table class="perm"><thead><tr><th>Rol</th><th>clientes</th><th>facturas</th><th>planilla</th><th>configuración</th></tr></thead><tbody id="rol-tb"></tbody></table></div>
+          <div class="legend"><span><i class="pm rw">L/E</i>Leer y escribir</span><span><i class="pm r">L</i>Solo leer</span><span><i class="pm no">—</i>Sin acceso</span></div>
+          <span class="hint">Prueba un intento de acceso:</span>
+          <div class="chips"><button class="chip" data-q="0">Ventas consulta la planilla</button><button class="chip" data-q="1">Soporte borra facturas</button><button class="chip" data-q="2">Contabilidad consulta facturas</button></div>
+          <div class="term" id="rol-term"><span class="dim">$ esperando consulta…</span></div>
+        </div>
+
+        <div class="dpanel" id="dp-cifrado">
+          <div class="dhead"><span class="hint">Un registro de cliente, como queda guardado</span><button class="chip" id="enc-tog">Cifrar con AES-256</button></div>
+          <div class="rec" id="enc-rec"></div>
+          <div class="enc-note" id="enc-note"></div>
+          <div class="layers">
+            <div><b>En tránsito</b><span>HTTPS con TLS 1.3 entre el cliente, tu sistema y la base de datos.</span></div>
+            <div><b>En reposo</b><span>Base de datos, discos y respaldos cifrados; llaves guardadas aparte.</span></div>
+            <div><b>Contraseñas</b><span>Nunca se guardan: solo su hash con bcrypt o Argon2.</span></div>
+          </div>
+        </div>
+
+        <div class="dpanel" id="dp-servidor">
+          <span class="hint">Marca lo que ya tiene tu servidor:</span>
+          <div class="sec-wrap">
+            <div><div class="gauge"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="#1f1f1f" stroke-width="10"/><circle id="lab-arc" cx="60" cy="60" r="52" fill="none" stroke="#f2555a" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" style="transition:stroke-dashoffset .6s ease,stroke .6s"/></svg><div class="val"><b id="lab-n">0</b><small>de 100</small></div></div><div class="lvl" id="lab-lvl"></div></div>
+            <div class="checks" id="lab-checks"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">Cómo funciona</span><h2>Seguridad sin frenar la operación</h2></div>
+    <div class="cells c4">
+      <div class="cell"><span class="num">01</span><h4>Auditoría</h4><p>Revisamos servidores, bases de datos, accesos y dónde viven los datos.</p></div>
+      <div class="cell"><span class="num">02</span><h4>Roles y accesos</h4><p>Usuarios por persona, mínimo privilegio y verificación en dos pasos.</p></div>
+      <div class="cell"><span class="num">03</span><h4>Cifrado y endurecimiento</h4><p>Datos cifrados, firewall, puertos cerrados y parches al día.</p></div>
+      <div class="cell"><span class="num">04</span><h4>Monitoreo y respaldo</h4><p>Alertas, registros de auditoría y respaldos cifrados probados.</p></div>
+    </div>
+  </section>
+
+  <section class="blk">
+    <div class="blk-head"><span class="eyebrow">El resultado</span><h2>Confianza para tus clientes y tranquilidad para ti</h2></div>
+    <div class="cells c2">
+      <div class="cell before"><span class="eyebrow">Antes</span><ul><li>Un usuario con acceso a todo</li><li>Datos legibles si se filtran</li><li>Servidor sin vigilancia ni respaldos</li></ul></div>
+      <div class="cell after"><span class="eyebrow g">Después</span><ul><li>Cada rol ve solo lo que necesita</li><li>Información cifrada en tránsito y en reposo</li><li>Servidor endurecido, monitoreado y respaldado</li></ul></div>
+    </div>
+    <div class="stack"><span>AES-256</span><span>TLS 1.3</span><span>Roles en base de datos</span><span>Firewall</span><span>SSH con llave</span><span>Logs de auditoría</span><span>Respaldos cifrados</span></div>
+  </section>
+</div></article>
+
+<section class="cta wrap" id="cta" hidden>
+  <span class="eyebrow">¿Tu negocio tiene este problema?</span>
+  <h2>Diseñemos la solución para tu negocio</h2>
+  <p>Cotización sin costo y una reunión para evaluar la mejor solución.</p>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center"><a class="btn w" href="/#contacto">Pide tu cotización sin costo</a><a class="btn o" href="#">Ver otros casos</a></div>
+</section>
+<nav class="next wrap" id="next" hidden></nav>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const order=['atencion','facturacion','tienda','ia','datos'];
+const names={atencion:'Atención por WhatsApp',facturacion:'Facturación electrónica',tienda:'Tienda y panel de ventas',ia:'IA para tu equipo',datos:'Protección de datos'};
+function route(){const h=location.hash.replace('#','');const on=order.includes(h);
+ $('#lista').hidden=on;$$('.case').forEach(c=>c.classList.toggle('on',c.id==='c-'+h));$('#cta').hidden=!on;$('#next').hidden=!on;
+ if(on){const i=order.indexOf(h),p=order[(i+4)%5],n=order[(i+1)%5];
+  $('#next').innerHTML=`<a href="#${p}">‹ Anterior<b>${names[p]}</b></a><a href="#${n}" style="text-align:right">Siguiente ›<b>${names[n]}</b></a>`;window.scrollTo(0,0)}}
+addEventListener('hashchange',route);route();
+const shelf=$('#shelf');const step=()=>Math.min(360,shelf.clientWidth*.8);
+$('#prev').addEventListener('click',()=>shelf.scrollBy({left:-step(),behavior:'smooth'}));
+$('#nextb').addEventListener('click',()=>shelf.scrollBy({left:step(),behavior:'smooth'}));
+const wait=ms=>new Promise(r=>setTimeout(r,matchMedia('(prefers-reduced-motion: reduce)').matches?0:ms));
+
+/* Atención */
+const msgs=$('#clin-msgs'),ag=$('#clin-agenda');
+const slots=[['8:00','Cita agendada',1],['9:00','Cita agendada',1],['10:00','',0],['11:00','Cita agendada',1],['14:00','',0],['15:00','Cita agendada',1],['16:00','',0]];
+function drawAg(){ag.querySelectorAll('.slot').forEach(e=>e.remove());slots.forEach(s=>{const d=document.createElement('div');d.className='slot'+(s[2]?' busy':'')+(s[3]?' '+s[3]:'');d.innerHTML=`<time>${s[0]}</time><span>${s[1]||'<span style="color:var(--dim)">Libre</span>'}</span><span class="st">${s[2]?(s[4]||'Ocupado'):'Disponible'}</span>`;ag.appendChild(d)})}
+drawAg();
+let busy=false,clock=8*60+12;
+const tm=()=>{clock++;return `${Math.floor(clock/60)%24}:${String(clock%60).padStart(2,'0')}`};
+function add(text,cls){const d=document.createElement('div');d.className='m '+(cls||'');d.innerHTML=text.replace(/</g,'&lt;')+`<span class="t">${tm()}</span>`;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight}
+function typing(){const t=document.createElement('div');t.className='typing';t.innerHTML='<i></i><i></i><i></i>';msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;return t}
+async function run(steps){if(busy)return;busy=true;for(const s of steps){if(s.fn){s.fn();continue}if(s.who==='p'){await wait(450);add(s.t,'out')}else{const ty=typing();await wait(900);ty.remove();add(s.t)}}busy=false}
+const flows={
+ precio:[{who:'p',t:'Hola, ¿cuánto cuesta una limpieza?'},{who:'b',t:'¡Hola! La limpieza dental cuesta $35 e incluye revisión general.\nAtendemos de lunes a viernes de 8:00 a 17:00.\n¿Quieres que te aparte una cita?'}],
+ cita:[{who:'p',t:'Quiero una cita para limpieza'},{who:'b',t:'Con gusto. Este jueves tengo libre:\n• 10:00 a. m.\n• 2:00 p. m.\n• 4:00 p. m.\n¿Cuál te queda mejor?'},{who:'p',t:'A las 2 por favor'},{fn:()=>{slots[4]=['14:00','Limpieza · nueva',1,'new','Por WhatsApp'];drawAg()}},{who:'b',t:'¡Listo! ✅ Tu cita quedó agendada:\nJueves 2:00 p. m. · Limpieza\nTe enviaré un recordatorio un día antes.'}],
+ recordatorio:[{fn:()=>add('Miércoles · recordatorio automático','sys')},{who:'b',t:'Hola 👋 Te recordamos tu cita de mañana jueves a las 2:00 p. m.\nResponde 1 para confirmar o 2 para reprogramar.'},{who:'p',t:'1'},{fn:()=>{slots[4]=['14:00','Limpieza',1,'conf','Confirmada ✓'];drawAg()}},{who:'b',t:'¡Gracias! Tu cita está confirmada.'}],
+ humano:[{who:'p',t:'Tengo mucho dolor de muela'},{who:'b',t:'Lamento lo que sientes. Esto puede ser una urgencia: te comunico ahora mismo con una persona del equipo.'},{fn:()=>add('Conversación transferida a recepción','sys')}]
+};
+$$('#clin-chips .chip').forEach(b=>b.addEventListener('click',()=>{run(flows[b.dataset.k]);$$('#clin-chips .chip').forEach(x=>x.classList.toggle('on',x===b))}));
+
+/* Facturación */
+const prods=[['Cemento gris 42.5 kg',9.75],['Varilla corrugada 3/8"',4.60],['Pintura látex galón',14.90],['Tubo PVC 1/2"',3.25],['Clavos 2½" libra',1.35],['Lámina de zinc',16.40]];
+let cart={0:4,1:10},dtype='FAC';
+$('#fer-prods').innerHTML=prods.map((p,i)=>`<button class="prod" data-i="${i}">${p[0]}<small>$${p[1].toFixed(2)}</small></button>`).join('');
+$$('#fer-prods .prod').forEach(b=>b.addEventListener('click',()=>{const i=b.dataset.i;cart[i]=(cart[i]||0)+1;drawCart()}));
+$$('#fer-type button').forEach(b=>b.addEventListener('click',()=>{dtype=b.dataset.t;$$('#fer-type button').forEach(x=>x.classList.toggle('on',x===b))}));
+const money=n=>'$'+n.toFixed(2);
+function totals(){let s=0;for(const i in cart)s+=prods[i][1]*cart[i];const sub=s/1.13;return{tot:s,sub,iva:s-sub}}
+function drawCart(){const k=Object.keys(cart);if(!k.length){$('#fer-lines').innerHTML='<span style="color:var(--dim)">Toca un producto para agregarlo</span>';$('#fer-tot').innerHTML='';return}
+ $('#fer-lines').innerHTML=k.map(i=>`<div class="line"><span>${cart[i]} × ${prods[i][0]}</span><span>${money(prods[i][1]*cart[i])}</span></div>`).join('');
+ const t=totals();$('#fer-tot').innerHTML=`<div><span>Sumas sin IVA</span><span>${money(t.sub)}</span></div><div><span>IVA 13%</span><span>${money(t.iva)}</span></div><div class="g"><span>Total</span><span>${money(t.tot)}</span></div>`}
+drawCart();
+const hex=n=>[...crypto.getRandomValues(new Uint8Array(n))].map(b=>b.toString(16).padStart(2,'0')).join('').toUpperCase();
+$('#fer-go').addEventListener('click',async()=>{if(!Object.keys(cart).length)return;const t=totals();
+ const uuid=`${hex(4)}-${hex(2)}-${hex(2)}-${hex(2)}-${hex(6)}`,num=`DTE-${dtype==='FAC'?'01':'03'}-M001P001-${String(Math.floor(Math.random()*9e14)).padStart(15,'0')}`;
+ const d=$('#fer-dte');d.classList.add('on');
+ d.innerHTML=`<div class="hd"><div><b>${dtype==='FAC'?'FACTURA':'COMPROBANTE DE CRÉDITO FISCAL'}</b><br>Documento Tributario Electrónico</div><span class="qr" aria-label="Código QR de consulta"></span></div>
+ <div>Código de generación<br><code>${uuid}</code></div><div>Número de control<br><code>${num}</code></div>
+ <div>${Object.keys(cart).map(i=>`${cart[i]} × ${prods[i][0]} — ${money(prods[i][1]*cart[i])}`).join('<br>')}</div>
+ <div><b>Total: ${money(t.tot)}</b> (IVA incluido ${money(t.iva)})</div><div class="ok" id="fer-sello">Enviando a Hacienda…</div>`;
+ $('#fer-pipe-wrap').style.display='flex';
+ const st=['Firmado con la firma electrónica','Recibido y sellado por Hacienda','Enviado al cliente por correo y WhatsApp','Respaldado en la nube','Existencias descontadas del inventario'];
+ $('#fer-pipe').innerHTML=st.map(s=>`<div class="pipe"><i></i>${s}</div>`).join('');
+ const els=$$('#fer-pipe .pipe');for(let i=0;i<els.length;i++){await wait(550);els[i].classList.add('done');if(i===1)$('#fer-sello').textContent='Sello de recepción: '+hex(10)}
+ cart={};drawCart()});
+
+/* Tienda + panel de ventas */
+const ico={
+ shirt:'<path d="M8 4l-5 3 2 5 3-1v11h12V11l3 1 2-5-5-3c-1 2-3 3-4 3s-3-1-4-3z"/>',
+ cap:'<path d="M3 16c0-6 4-10 9-10s9 4 9 10H3z"/><path d="M12 16h10c0 1-1 2-3 2h-7"/>',
+ shoe:'<path d="M2 17v-6l5 1 3-4 4 5c3 1 6 1 8 3v1H2z"/><path d="M2 19h20"/>',
+ bag:'<rect x="5" y="7" width="14" height="14" rx="3"/><path d="M9 7V5a3 3 0 016 0v2"/><path d="M9 13h6"/>'};
+const sp=[['Camisa básica',18,'#ecebe6','shirt',14],['Gorra bordada',15,'#e4e9ee','cap',9],['Tenis urbanos',55,'#eee6ea','shoe',7],['Mochila diaria',32,'#e4ece5','bag',5]];
+const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">${ico[k]}</svg>`;
+let scart=[];let ventas=742,nped=21,onum=1047;
+const hrs=[[8,60],[9,95],[10,130],[11,170],[12,110],[13,82],[14,95],[15,0]];
+const chans={'Tienda en línea':340,'WhatsApp':232,'Local':170};
+const feed=[];
+function drawStore(){$('#st-grid').innerHTML=sp.map((p,i)=>`<div class="sp"><div class="img" style="background:${p[2]}">${svg(p[3])}</div><div class="b">${p[0]}<span>$${p[1].toFixed(2)}</span><button data-i="${i}" ${p[4]<=0?'disabled':''}>${p[4]<=0?'Agotado':'Agregar'}</button><span class="stk">${p[4]} disponibles</span></div></div>`).join('');
+ $$('#st-grid button').forEach(b=>b.addEventListener('click',()=>{scart.push(+b.dataset.i);const c=$('#st-cartn');c.classList.add('bump');setTimeout(()=>c.classList.remove('bump'),200);drawCartS()}))}
+function drawCartS(){const t=scart.reduce((a,i)=>a+sp[i][1],0);$('#st-cartn').textContent='Carrito · '+scart.length;
+ $('#st-sum').textContent=scart.length?scart.length+(scart.length>1?' productos':' producto'):'Agrega un producto';$('#st-tot').textContent=money(t);$('#st-pay').disabled=!scart.length}
+function drawDash(nw){const avg=ventas/nped;
+ $('#st-kpis').innerHTML=`<div class="mini"><div class="n">$${Math.round(ventas).toLocaleString('en-US')}</div><div class="l">Ventas hoy</div></div><div class="mini"><div class="n">${nped}</div><div class="l">Pedidos</div></div><div class="mini"><div class="n">$${avg.toFixed(2)}</div><div class="l">Ticket promedio</div></div>`;
+ const mx=Math.max(...hrs.map(h=>h[1]),1);$('#st-hours').innerHTML=hrs.map((h,i)=>`<div class="${i===hrs.length-1?'now':''}"><i style="height:${h[1]/mx*100}%"></i><small>${h[0]}h</small></div>`).join('');
+ const tot=Object.values(chans).reduce((a,b)=>a+b,0);$('#st-chans').innerHTML=Object.entries(chans).map(([k,v])=>`<div class="chan"><div class="top"><span>${k}</span><b>${Math.round(v/tot*100)}%</b></div><div class="tr"><span style="width:${v/tot*100}%"></span></div></div>`).join('');
+ $('#st-feed').innerHTML=feed.slice(0,3).map((o,i)=>`<div class="ord${i===0&&nw?' new':''}"><span class="id">#${o.n}</span><span class="amt">${money(o.t)}</span><span class="pill ${o.st[0]}">${o.st[1]}</span><span class="sub">${o.c} · ${o.p}</span></div>`).join('')}
+function placeOrder(items,c,p){const t=items.reduce((a,i)=>a+sp[i][1],0);items.forEach(i=>sp[i][4]=Math.max(0,sp[i][4]-1));
+ ventas+=t;nped++;hrs[hrs.length-1][1]+=t;chans[c]+=t;const o={n:onum++,t,c,p,st:['low','Pagado']};feed.unshift(o);drawDash(true);drawStore();
+ const low=[...new Set(items)].filter(i=>sp[i][4]<=3);
+ $('#st-log').innerHTML=low.length?`<span style="color:var(--warn)">${sp[low[0]][0]}: quedan ${sp[low[0]][4]}. Se envió una alerta para reabastecer.</span>`:`Pedido #${o.n} registrado: ${money(t)} por ${c.toLowerCase()}.`;
+ setTimeout(()=>{o.st=['ok',c==='Local'?'Entregado':'Preparando'];drawDash(false)},1400)}
+$('#st-pay').addEventListener('click',()=>{if(!scart.length)return;const it=scart;scart=[];drawCartS();placeOrder(it,'Tienda en línea','Tarjeta')});
+const pick=()=>{const av=sp.map((p,i)=>i).filter(i=>sp[i][4]>0);return av.length?[av[Math.floor(Math.random()*av.length)]]:null};
+$('#st-local').addEventListener('click',()=>{const it=pick();if(it)placeOrder(it,'Local','Efectivo')});
+$('#st-wa').addEventListener('click',()=>{const it=pick();if(it)placeOrder(it,'WhatsApp','Transferencia')});
+feed.push({n:1046,t:47,c:'WhatsApp',p:'Transferencia',st:['ok','Preparando']},{n:1045,t:55,c:'Tienda en línea',p:'Tarjeta',st:['ok','Enviado']},{n:1044,t:18,c:'Local',p:'Efectivo',st:['ok','Entregado']});
+drawStore();drawCartS();drawDash(false);
+
+/* IA */
+const tasks=[
+ {t:'Responder a un cliente',s:'Correo claro y amable',b:20,a:4,p:'Redacta un correo breve y amable para <b>[cliente]</b> explicando que <b>[situación]</b>. Incluye los próximos pasos y la fecha límite <b>[fecha]</b>. Tono cercano, sin tecnicismos.'},
+ {t:'Resumir un documento largo',s:'Normativa, informe o contrato',b:45,a:10,p:'Resume en 5 puntos sencillos <b>[pega el texto]</b>. Indica a quién afecta, desde cuándo y qué hay que hacer. No inventes datos que no estén en el texto.'},
+ {t:'Preparar una propuesta',s:'Para un cliente nuevo',b:40,a:8,p:'Redacta una propuesta de <b>[servicio]</b> para <b>[tipo de cliente]</b>. Incluye alcance, entregables, lo que necesitamos del cliente y próximos pasos. Máximo una página.'},
+ {t:'Analizar ventas del mes',s:'A partir de una tabla',b:60,a:12,p:'Con esta tabla de ventas <b>[pega los datos]</b>, dime los 3 productos que más crecieron, los 3 que más cayeron y una recomendación para el próximo mes.'}
+];
+$('#ia-tasks').innerHTML=tasks.map((x,i)=>`<button class="task" data-i="${i}">${x.t}<small>${x.s}</small></button>`).join('');
+function showTask(i){const x=tasks[i];$$('.task').forEach(b=>b.classList.toggle('on',b.dataset.i==i));
+ $('#ia-out').innerHTML=`<span class="eyebrow">Instrucción de la biblioteca</span><div class="prompt" id="ia-p">${x.p}</div><button class="chip" id="ia-copy" style="align-self:flex-start">Copiar instrucción</button>
+ <div class="tbars"><div class="tbar"><span>Sin IA</span><div class="bef"><span style="width:0" data-w="${x.b/60*100}"></span></div><em>${x.b} min</em></div><div class="tbar"><span>Con IA</span><div class="aft"><span style="width:0" data-w="${x.a/60*100}"></span></div><em>${x.a} min</em></div></div>
+ <span style="font-size:12px;color:var(--dim)">Tiempos aproximados. La IA prepara el borrador y una persona siempre lo revisa.</span>`;
+ requestAnimationFrame(()=>requestAnimationFrame(()=>$$('#ia-out span[data-w]').forEach(s=>s.style.width=s.dataset.w+'%')));
+ $('#ia-copy').addEventListener('click',e=>{const b=e.currentTarget,txt=$('#ia-p').innerText;const sel=()=>{const r=document.createRange();r.selectNodeContents($('#ia-p'));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selecciónala y cópiala'};
+  try{navigator.clipboard.writeText(txt).then(()=>{b.textContent='Copiada ✓';setTimeout(()=>b.textContent='Copiar instrucción',1500)}).catch(sel)}catch(_){sel()}})}
+$$('.task').forEach(b=>b.addEventListener('click',()=>showTask(b.dataset.i)));showTask(0);
+
+/* Datos: pestañas */
+$$('#dat-tabs button').forEach(b=>b.addEventListener('click',()=>{$$('#dat-tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('.dpanel').forEach(p=>p.classList.toggle('on',p.id==='dp-'+b.dataset.p))}));
+/* Roles */
+const roles=['Administrador','Contabilidad','Ventas','Soporte'];
+const permAfter=[['rw','rw','rw','rw'],['r','rw','rw','no'],['rw','r','no','no'],['r','no','no','r']];
+const lbl={rw:'L/E',r:'L',no:'—'};let safe=false;
+function drawPerm(){$('#rol-tb').innerHTML=roles.map((r,i)=>`<tr><td>${r}</td>${permAfter[i].map(p=>{const v=safe?p:'rw';return `<td><i class="pm ${v}">${lbl[v]}</i></td>`}).join('')}</tr>`).join('');
+ document.querySelector('table.perm').classList.toggle('safe',safe);$('#rol-tog').textContent=safe?'Ver cómo estaba antes':'Aplicar mínimo privilegio';$('#rol-tog').classList.toggle('on',safe)}
+$('#rol-tog').addEventListener('click',()=>{safe=!safe;drawPerm();$('#rol-term').innerHTML=`<span class="dim">$ ${safe?'permisos por rol aplicados':'un solo usuario con acceso total'}</span>`});drawPerm();
+const qs=[
+ {u:'ventas',sql:'SELECT nombre, salario FROM planilla;',r:2,t:2,ok:'(48 filas) Juan P. · $1,250.00  María L. · $980.00 …',warn:'Ventas puede ver los salarios de toda la empresa.'},
+ {u:'soporte',sql:'DELETE FROM facturas WHERE fecha < \'2026-01-01\';',r:3,t:1,ok:'DELETE 3,412',warn:'Se borraron facturas que Hacienda exige conservar.'},
+ {u:'contabilidad',sql:'SELECT numero, total FROM facturas WHERE mes = 10;',r:1,t:1,ok:'(126 filas) DTE-01-… · $45.20 …',warn:''}];
+$$('#dp-roles [data-q]').forEach(b=>b.addEventListener('click',async()=>{const q=qs[b.dataset.q];$$('#dp-roles [data-q]').forEach(x=>x.classList.toggle('on',x===b));
+ const allowed=!safe||permAfter[q.r][q.t]!=='no'&&!(q.sql.startsWith('DELETE')&&permAfter[q.r][q.t]==='r');const term=$('#rol-term');
+ term.innerHTML=`<span class="dim">${q.u}@db</span> <span class="cmd">${q.sql}</span>\n`;await wait(500);
+ if(allowed){term.innerHTML+=`<span class="${q.warn?'warn':'ok'}">${q.ok}</span>`+(q.warn?`\n<span class="bad">⚠ ${q.warn}</span>`:`\n<span class="ok">✓ Acceso permitido: es parte de su trabajo.</span>`)}
+ else{term.innerHTML+=`<span class="bad">ERROR: permiso denegado para la tabla ${['clientes','facturas','planilla','configuración'][q.t]}</span>\n<span class="ok">✓ Bloqueado y registrado en el log de auditoría.</span>`}}));
+/* Cifrado */
+const rec=[['nombre','Cliente de ejemplo'],['dui','01234567-8'],['correo','cliente@correo.com'],['teléfono','7000-0000'],['tarjeta','4111 1111 1111 1111']];
+const b64=n=>btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(n))));
+let enc=false;
+function drawRec(vals){$('#enc-rec').innerHTML=rec.map((r,i)=>`<div><span>${r[0]}</span><code>${vals[i]}</code></div>`).join('');$('#enc-rec').classList.toggle('enc',enc)}
+drawRec(rec.map(r=>r[1]));$('#enc-note').innerHTML='<span style="color:var(--bad)">Sin cifrar:</span> quien copie la base de datos o un respaldo puede leerlo todo.';
+$('#enc-tog').addEventListener('click',async()=>{enc=!enc;$('#enc-tog').textContent=enc?'Descifrar (con la llave)':'Cifrar con AES-256';$('#enc-tog').classList.toggle('on',enc);
+ const tgt=enc?rec.map(r=>b64(Math.max(12,r[1].length))):rec.map(r=>r[1]);
+ for(let k=0;k<4;k++){drawRec(rec.map(r=>b64(10)));await wait(70)}drawRec(tgt);
+ $('#enc-note').innerHTML=enc?'<span style="color:var(--green)">Cifrado:</span> sin la llave, los datos robados son inútiles. Tu sistema los descifra solo para usuarios autorizados.':'<span style="color:var(--bad)">Sin cifrar:</span> quien copie la base de datos o un respaldo puede leerlo todo.'});
+/* Servidor */
+const checks=[['Firewall con solo los puertos necesarios abiertos',14],['Base de datos sin acceso desde internet',14],['Acceso SSH solo con llave, sin usuario root',12],['Actualizaciones de seguridad automáticas',10],['Verificación en dos pasos para administradores',10],['Respaldos cifrados fuera del servidor',12],['Monitoreo y alertas de intrusión',10],['Registros (logs) de auditoría',8]];
+const base=10;
+$('#lab-checks').innerHTML=checks.map((c,i)=>`<label class="chk"><input type="checkbox" id="lab-c${i}"><span>${c[0]}<small>+${c[1]} puntos</small></span></label>`).join('');
+[3].forEach(i=>$('#lab-c'+i).checked=true);
+function score(){let s=base;checks.forEach((c,i)=>{if($('#lab-c'+i).checked)s+=c[1]});s=Math.min(100,s);
+ $('#lab-n').textContent=s;const arc=$('#lab-arc');arc.style.strokeDashoffset=326.7*(1-s/100);
+ const col=s<50?'#f2555a':s<75?'#f5a524':'#5EEB5B';arc.style.stroke=col;$('#lab-lvl').textContent=s<50?'Servidor expuesto':s<75?'Protección parcial':'Servidor endurecido';$('#lab-lvl').style.color=col}
+$$('#lab-checks input').forEach(c=>c.addEventListener('change',score));score();
+})();
+</script>
+</body>
+</html>
