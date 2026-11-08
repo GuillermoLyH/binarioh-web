@@ -188,15 +188,15 @@
   @media (max-width:860px){ .feature-row.reverse .f-visual{ order:0; } }
 
   .f-visual{
-    aspect-ratio: 4/3; border-radius:20px; background: var(--card);
-    border:1px solid var(--card-border);
-    display:flex; align-items:center; justify-content:center;
-    font-size: 90px;
-    position:relative; overflow:hidden;
+    aspect-ratio: 16/10; border-radius:20px; background: var(--card);
+    border:1px solid var(--card-border); position:relative; overflow:hidden;
   }
+  .f-visual img{ width:100%; height:100%; object-fit:cover; display:block; transition: transform .6s ease; }
+  .feature-row:hover .f-visual img{ transform:scale(1.03); }
   .f-visual::after{
-    content:''; position:absolute; inset:0;
-    background: radial-gradient(circle at 30% 20%, var(--green-dim), transparent 60%);
+    content:''; position:absolute; inset:0; pointer-events:none; border-radius:inherit;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    background: linear-gradient(to top, rgba(0,0,0,.25), transparent 40%);
   }
   .f-text .kicker{ margin-bottom:18px; }
   .f-text h3{ font-size:38px; line-height:1.08; }
@@ -328,20 +328,7 @@
     </div>
 
     <div class="feature-row reveal">
-      <div class="f-visual">
-        <svg width="130" height="90" viewBox="0 0 130 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="20" cy="45" r="13" stroke="#5EEB5B" stroke-width="3"/>
-          <path d="M20 40L20 50M15 45L25 45" stroke="#5EEB5B" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M35 45H55" stroke="#5EEB5B" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M50 40L57 45L50 50" stroke="#5EEB5B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <rect x="52" y="30" width="30" height="30" rx="7" stroke="#5EEB5B" stroke-width="3"/>
-          <path d="M62 45H72M67 40V50" stroke="#5EEB5B" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M90 45H110" stroke="#5EEB5B" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M105 40L112 45L105 50" stroke="#5EEB5B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="110" cy="45" r="13" stroke="#5EEB5B" stroke-width="3"/>
-          <path d="M104 45L108 49L117 40" stroke="#5EEB5B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
+      <div class="f-visual"><img src="img/servicios/automatizacion-1600.webp" srcset="img/servicios/automatizacion-900.webp 900w, img/servicios/automatizacion-1600.webp 1600w" sizes="(max-width:860px) 100vw, 560px" width="1600" height="1000" alt="Equipo diseñando una automatización que conecta WhatsApp con bases de datos" loading="lazy" decoding="async"></div>
       <div class="f-text">
         <div class="kicker"><span class="chev">›</span> Automatización</div>
         <h3>Automatización para tu negocio</h3>
@@ -352,15 +339,7 @@
     </div>
 
     <div class="feature-row reverse reveal">
-      <div class="f-visual">
-        <svg width="110" height="110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M26 12H64L78 26V88H26V12Z" stroke="#5EEB5B" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M64 12V26H78" stroke="#5EEB5B" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M36 38H62M36 48H68M36 58H56" stroke="#5EEB5B" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="62" cy="72" r="9" stroke="#5EEB5B" stroke-width="3"/>
-          <path d="M58 72L61 75L67 69" stroke="#5EEB5B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
+      <div class="f-visual"><img src="img/servicios/facturacion-1600.webp" srcset="img/servicios/facturacion-900.webp 900w, img/servicios/facturacion-1600.webp 1600w" sizes="(max-width:860px) 100vw, 560px" width="1600" height="1000" alt="Equipo configurando la facturación electrónica junto al punto de venta" loading="lazy" decoding="async"></div>
       <div class="f-text">
         <div class="kicker"><span class="chev">›</span> Facturación electrónica</div>
         <h3>Facturación electrónica sin complicaciones</h3>
@@ -371,16 +350,7 @@
     </div>
 
     <div class="feature-row reveal">
-      <div class="f-visual">
-        <svg width="110" height="110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="14" y="22" width="72" height="56" rx="6" stroke="#5EEB5B" stroke-width="3"/>
-          <path d="M14 34H86" stroke="#5EEB5B" stroke-width="3"/>
-          <circle cx="22" cy="28" r="1.8" fill="#5EEB5B"/>
-          <circle cx="28" cy="28" r="1.8" fill="#5EEB5B"/>
-          <circle cx="34" cy="28" r="1.8" fill="#5EEB5B"/>
-          <path d="M38 52L30 58L38 64M62 52L70 58L62 64M54 48L46 68" stroke="#5EEB5B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
+      <div class="f-visual"><img src="img/servicios/sistemas-1600.webp" srcset="img/servicios/sistemas-900.webp 900w, img/servicios/sistemas-1600.webp 1600w" sizes="(max-width:860px) 100vw, 560px" width="1600" height="1000" alt="Equipo planificando un sistema a la medida para un negocio" loading="lazy" decoding="async"></div>
       <div class="f-text">
         <div class="kicker"><span class="chev">›</span> Sistemas</div>
         <h3>Sistemas para tu negocio</h3>
@@ -391,13 +361,7 @@
     </div>
 
     <div class="feature-row reverse reveal">
-      <div class="f-visual">
-        <svg width="110" height="110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M50 16C51.5 32 34 49.5 18 51C34 52.5 51.5 70 50 86C51.5 70 69 52.5 85 51C69 49.5 51.5 32 50 16Z"
-                stroke="#5EEB5B" stroke-width="3" stroke-linejoin="round"/>
-          <path d="M78 18L79.5 24L85 25.5L79.5 27L78 33L76.5 27L71 25.5L76.5 24L78 18Z" fill="#5EEB5B"/>
-        </svg>
-      </div>
+      <div class="f-visual"><img src="img/servicios/ia-1600.webp" srcset="img/servicios/ia-900.webp 900w, img/servicios/ia-1600.webp 1600w" sizes="(max-width:860px) 100vw, 560px" width="1600" height="1000" alt="Taller práctico de inteligencia artificial para un equipo de trabajo" loading="lazy" decoding="async"></div>
       <div class="f-text">
         <div class="kicker"><span class="chev">›</span> IA para tu equipo</div>
         <h3>IA para tu equipo</h3>
@@ -408,13 +372,7 @@
     </div>
 
     <div class="feature-row reveal">
-      <div class="f-visual">
-        <svg width="110" height="110" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M50 12L82 24V46C82 66 68 82 50 90C32 82 18 66 18 46V24L50 12Z" stroke="#5EEB5B" stroke-width="3" stroke-linejoin="round"/>
-          <rect x="40" y="48" width="20" height="16" rx="3" stroke="#5EEB5B" stroke-width="3"/>
-          <path d="M44 48V42C44 38 46.5 35 50 35C53.5 35 56 38 56 42V48" stroke="#5EEB5B" stroke-width="3"/>
-        </svg>
-      </div>
+      <div class="f-visual"><img src="img/servicios/datos-1600.webp" srcset="img/servicios/datos-900.webp 900w, img/servicios/datos-1600.webp 1600w" sizes="(max-width:860px) 100vw, 560px" width="1600" height="1000" alt="Especialista revisando servidores y la seguridad de los datos" loading="lazy" decoding="async"></div>
       <div class="f-text">
         <div class="kicker"><span class="chev">›</span> Protección de datos</div>
         <h3>Protección de datos</h3>
